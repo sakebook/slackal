@@ -1,0 +1,57 @@
+buildscript {
+    ext.kotlin_version = '1.3.31'
+    ext.ktor_version = '1.2.0'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+plugins {
+    id 'application'
+    id "org.jetbrains.kotlin.jvm" version "1.3.31"
+    id("com.google.cloud.tools.jib") version "1.2.0"
+}
+
+sourceCompatibility = 1.8
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+repositories {
+    jcenter()
+    maven { url "https://dl.bintray.com/kotlin/ktor" }
+}
+
+mainClassName = 'com.github.sakebook.slackal.MainKt'
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+jib {
+    container {
+        useCurrentTimestamp = true
+    }
+    
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "io.ktor:ktor-server-netty:$ktor_version"
+
+    compile 'com.google.api-client:google-api-client:1.28.0'
+    compile 'com.google.oauth-client:google-oauth-client-jetty:1.29.0'
+    compile 'com.google.apis:google-api-services-calendar:v3-rev378-1.25.0'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
