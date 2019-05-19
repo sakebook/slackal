@@ -1,1 +1,1 @@
-web: build/install/slackal/bin/slackal
+web: ./build/install/slackal/bin/slackal
