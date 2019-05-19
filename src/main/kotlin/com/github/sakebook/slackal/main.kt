@@ -1,8 +1,5 @@
 package com.github.sakebook.slackal
 
-
-import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.services.calendar.CalendarScopes
 import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.response.respondText
@@ -12,25 +9,15 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 
 fun main(args: Array<String>) {
+    println("Running...")
     val port = System.getenv("PORT") ?: "8080"
     embeddedServer(Netty, port.toInt()) {
         routing {
             get("/") {
-                println("/")
-                args.forEach {
-                    println("$it")
-                }
-                val json = """
-{
-    "text": "sample text",
-    "attachments": [
-        {
-            "text":"sample attachment text"
-        }
-    ]
-}
-                """.trimIndent()
-
+                println("Access path '/'")
+                val eventList = CalendarClient.getEventList()
+                val messaging = Messaging()
+                val json = messaging.createJSON(eventList)
                 call.respondText(json, ContentType.Application.Json)
             }
         }

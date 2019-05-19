@@ -1,5 +1,6 @@
 build
 .gradle
 .idea
-src/main/resources/credentials.json
+client_secret.json
+calendars.properties
 tokens
