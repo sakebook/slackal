@@ -9,9 +9,7 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.store.FileDataStoreFactory
 import com.google.api.services.calendar.CalendarScopes
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.InputStreamReader
+import java.io.*
 import java.util.*
 
 class Authorization {
@@ -24,23 +22,26 @@ class Authorization {
         HTTP_TRANSPORT: NetHttpTransport,
         JSON_FACTORY: JacksonFactory
     ): Credential {
-        val `in` = this::class.java.getResourceAsStream(CREDENTIALS_FILE_PATH)
-            ?: run {
-                println("Resource not found: $CREDENTIALS_FILE_PATH")
-                throw FileNotFoundException("Resource not found: $CREDENTIALS_FILE_PATH")
-            }
-        val clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, InputStreamReader(`in`))
+        val clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, getReader())
 
         // Build flow and trigger user authorization request.
         val flow = GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
             .setDataStoreFactory(FileDataStoreFactory(File(TOKENS_DIRECTORY_PATH)))
             .setAccessType("offline")
             .build()
-        val port = System.getenv("PORT") ?: "8080"
-        println("port: $port")
         val receiver = LocalServerReceiver.Builder()
-            .setPort(port.toInt())
+            .setPort(5000)
             .build()
         return AuthorizationCodeInstalledApp(flow, receiver).authorize("user")
+    }
+
+    private fun getReader(): Reader {
+        val clientSecret = System.getenv("CLIENT_SECRET")
+        return if (clientSecret.isNullOrBlank()) {
+            val inputStream = this::class.java.getResourceAsStream(CREDENTIALS_FILE_PATH)
+            InputStreamReader(inputStream)
+        } else {
+            StringReader(clientSecret)
+        }
     }
 }
