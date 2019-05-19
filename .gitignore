@@ -4,3 +4,8 @@ build
 client_secret.json
 calendars.properties
 tokens
+out
+*.iml
+*.ipr
+*.iws
+.DS_Store
