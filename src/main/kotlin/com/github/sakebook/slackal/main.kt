@@ -15,6 +15,10 @@ fun main(args: Array<String>) {
         routing {
             get("/") {
                 println("Access path '/'")
+                call.respondText("Hello Slackal", ContentType.Text.Plain)
+            }
+            get("/slackal") {
+                println("Access path '/slackal'")
                 val eventList = CalendarClient.getEventList()
                 val messaging = Messaging()
                 val json = messaging.createJSON(eventList)
