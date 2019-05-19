@@ -16,6 +16,7 @@ class Authorization {
 
     val SCOPES = Collections.singletonList(CalendarScopes.CALENDAR_READONLY)
     val CREDENTIALS_FILE_PATH = "/credentials/client_secret.json"
+    val ENV_CLIENT_SECRET = "CLIENT_SECRET"
     val TOKENS_DIRECTORY_PATH = "tokens"
 
     fun getCredential(
@@ -36,7 +37,7 @@ class Authorization {
     }
 
     private fun getReader(): Reader {
-        val clientSecret = System.getenv("CLIENT_SECRET")
+        val clientSecret = System.getenv(ENV_CLIENT_SECRET)
         return if (clientSecret.isNullOrBlank()) {
             val inputStream = this::class.java.getResourceAsStream(CREDENTIALS_FILE_PATH)
             InputStreamReader(inputStream)
