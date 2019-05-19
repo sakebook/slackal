@@ -33,8 +33,9 @@ class Authorization {
             .setDataStoreFactory(FileDataStoreFactory(File(TOKENS_DIRECTORY_PATH)))
             .setAccessType("offline")
             .build()
+        val port = System.getenv("PORT") ?: "8080"
         val receiver = LocalServerReceiver.Builder()
-            .setPort(5000)
+            .setPort(port.toInt())
             .build()
         return AuthorizationCodeInstalledApp(flow, receiver).authorize("user")
     }
