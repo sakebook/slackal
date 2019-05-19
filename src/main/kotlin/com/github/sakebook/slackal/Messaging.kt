@@ -11,6 +11,10 @@ class Messaging {
     private val df: SimpleDateFormat = SimpleDateFormat("HH:mm")
 
     fun createJSON(events: List<Event>): String {
+        if (events.isEmpty()) {
+            return Json.stringify(Message.serializer(), Message(text = "直近の予定はありません"))
+        }
+
         val attachments = events.map {
             Attachment(
                 text = "${df.format(it.start.dateTime.value)}~${df.format(it.end.dateTime.value)}",
