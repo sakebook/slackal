@@ -25,7 +25,10 @@ class Authorization {
         JSON_FACTORY: JacksonFactory
     ): Credential {
         val `in` = this::class.java.getResourceAsStream(CREDENTIALS_FILE_PATH)
-            ?: throw FileNotFoundException("Resource not found: $CREDENTIALS_FILE_PATH")
+            ?: run {
+                println("Resource not found: $CREDENTIALS_FILE_PATH")
+                throw FileNotFoundException("Resource not found: $CREDENTIALS_FILE_PATH")
+            }
         val clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, InputStreamReader(`in`))
 
         // Build flow and trigger user authorization request.
@@ -34,6 +37,7 @@ class Authorization {
             .setAccessType("offline")
             .build()
         val port = System.getenv("PORT") ?: "8080"
+        println("port: $port")
         val receiver = LocalServerReceiver.Builder()
             .setPort(port.toInt())
             .build()
