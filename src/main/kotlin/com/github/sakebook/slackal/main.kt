@@ -24,6 +24,10 @@ fun main(args: Array<String>) {
                 val json = messaging.createJSON(eventList)
                 call.respondText(json, ContentType.Application.Json)
             }
+            get("/oauth2callback") {
+                println("Access path '/oauth2callback'")
+                call.respondText("oauth2callback", ContentType.Text.Plain)
+            }
         }
     }.start(wait = true)
 }

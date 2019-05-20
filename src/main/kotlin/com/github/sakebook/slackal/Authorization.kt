@@ -35,7 +35,8 @@ class Authorization {
             .setAccessType("offline")
             .build()
         val receiver = LocalServerReceiver.Builder()
-            .setPort(3000)
+            .setHost("slackal.herokuapp.com")
+            .setCallbackPath("/oauth2callback")
             .build()
         return AuthorizationCodeInstalledApp(flow, receiver, CustomBrowser()).authorize("user")
     }
@@ -74,6 +75,8 @@ class CustomBrowser : AuthorizationCodeInstalledApp.Browser {
                 } else {
                     println("desktop.isSupported(Desktop.Action.BROWSE) is false")
                 }
+            } else {
+                println("Desktop.isDesktopSupported() is false")
             }
         } catch (e: IOException) {
             println("Unable to open browser, $e")
