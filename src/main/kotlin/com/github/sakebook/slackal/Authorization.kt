@@ -35,7 +35,6 @@ class Authorization {
             .setAccessType("offline")
             .build()
         val receiver = LocalServerReceiver.Builder()
-            .setHost("slackal.herokuapp.com")
             .setCallbackPath("/oauth2callback")
             .build()
         return AuthorizationCodeInstalledApp(flow, receiver, CustomBrowser()).authorize("user")
