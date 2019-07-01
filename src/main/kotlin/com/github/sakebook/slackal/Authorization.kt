@@ -26,8 +26,10 @@ class Authorization {
     private fun getReader(): InputStream {
         val clientSecret = System.getenv(ENV_CLIENT_SECRET)
         return if (clientSecret.isNullOrBlank()) {
+            println("Load secret from local file")
             this::class.java.getResourceAsStream(CREDENTIALS_FILE_PATH)
         } else {
+            println("Load secret from env")
             ByteArrayInputStream(clientSecret.toByteArray(Charsets.UTF_8))
         }
     }

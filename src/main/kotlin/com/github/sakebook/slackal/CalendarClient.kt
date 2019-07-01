@@ -14,6 +14,7 @@ object CalendarClient {
     val JSON_FACTORY = JacksonFactory.getDefaultInstance()
     val HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport()
     val authorization = Authorization()
+    private const val ENV_CALENDAR_IDS = "calendar_ids"
 
     private fun getCalendar(): Calendar {
         return Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, authorization.getCredential(HTTP_TRANSPORT, JSON_FACTORY))
@@ -21,17 +22,26 @@ object CalendarClient {
             .build()
     }
 
-    private fun getCalenderIds(): List<String> {
-        val prop = Properties()
-        val propertiesFile = System.getProperty("user.dir") + "/calendars.properties"
-        val reader = FileReader(propertiesFile)
-        prop.load(reader)
-        val calendarsString = prop["calendars"] as String
-        return calendarsString.split(",")
+    private fun getCalendarIds(): List<String> {
+        val calendarIds = System.getenv(ENV_CALENDAR_IDS)
+        return when (calendarIds.isNullOrBlank()) {
+            true -> {
+                println("Load calendar from local file")
+                val prop = Properties()
+                val propertiesFile = System.getProperty("user.dir") + "/calendars.properties"
+                val reader = FileReader(propertiesFile)
+                prop.load(reader)
+                prop["calendars"] as String
+            }
+            false -> {
+                println("Load calendar from env")
+                calendarIds
+            }
+        }.split(",")
     }
 
     private fun getEvents(calendar: Calendar, calendarId: String, now: DateTime): List<Event> {
-        try {
+        return try {
             val events = calendar.events().list(calendarId)
                 .setMaxResults(4)
                 .setTimeMin(now)
@@ -40,17 +50,17 @@ object CalendarClient {
                 .setSingleEvents(true)
                 .execute()
             println("events: ${events.items}")
-            return events.items
+            events.items
         } catch (e: Exception) {
             println("getEvents error: ${e.message}")
-            return emptyList()
+            emptyList()
         }
     }
 
     fun getEventList(): List<Event> {
         val now = DateTime(System.currentTimeMillis())
         val service = getCalendar()
-        val ids = getCalenderIds()
+        val ids = getCalendarIds()
         return ids.map {
             getEvents(service, it, now)
         }.flatten()
