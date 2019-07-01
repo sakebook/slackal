@@ -6,7 +6,7 @@ import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.Calendar
 import com.google.api.services.calendar.model.Event
 import java.io.FileReader
-import java.util.*
+import java.util.Properties
 
 object CalendarClient {
 
@@ -31,14 +31,20 @@ object CalendarClient {
     }
 
     private fun getEvents(calendar: Calendar, calendarId: String, now: DateTime): List<Event> {
-        val events = calendar.events().list(calendarId)
-            .setMaxResults(4)
-            .setTimeMin(now)
-            .setTimeMax(DateTime(now.value + 1000L * 60L * 60L * 2L)) // 2時間
-            .setOrderBy("startTime")
-            .setSingleEvents(true)
-            .execute()
-        return events.items
+        try {
+            val events = calendar.events().list(calendarId)
+                .setMaxResults(4)
+                .setTimeMin(now)
+                .setTimeMax(DateTime(now.value + 1000L * 60L * 60L * 2L)) // 2時間
+                .setOrderBy("startTime")
+                .setSingleEvents(true)
+                .execute()
+            println("events: ${events.items}")
+            return events.items
+        } catch (e: Exception) {
+            println("getEvents error: ${e.message}")
+            return emptyList()
+        }
     }
 
     fun getEventList(): List<Event> {
