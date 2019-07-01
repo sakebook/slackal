@@ -5,10 +5,13 @@ import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
+import java.util.TimeZone
 
 class Messaging {
 
-    private val df: SimpleDateFormat = SimpleDateFormat("HH:mm")
+    private val df: SimpleDateFormat = SimpleDateFormat("HH:mm").apply {
+        timeZone = TimeZone.getTimeZone("Asia/Tokyo")
+    }
 
     fun createJSON(events: List<Event>): String {
         if (events.isEmpty()) {
