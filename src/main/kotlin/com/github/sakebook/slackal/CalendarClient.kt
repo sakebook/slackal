@@ -14,7 +14,7 @@ object CalendarClient {
     val JSON_FACTORY = JacksonFactory.getDefaultInstance()
     val HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport()
     val authorization = Authorization()
-    private const val ENV_CALENDAR_IDS = "calendar_ids"
+    private const val ENV_CALENDAR_IDS = "CALENDAR_IDS"
 
     private fun getCalendar(): Calendar {
         return Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, authorization.getCredential(HTTP_TRANSPORT, JSON_FACTORY))
