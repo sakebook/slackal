@@ -5,6 +5,10 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.Calendar
 import com.google.api.services.calendar.model.Event
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 import java.io.FileReader
 import java.util.Properties
 
@@ -57,12 +61,14 @@ object CalendarClient {
         }
     }
 
-    fun getEventList(): List<Event> {
+    suspend fun getEventList(): List<Event> {
         val now = DateTime(System.currentTimeMillis())
         val service = getCalendar()
         val ids = getCalendarIds()
-        return ids.map {
-            getEvents(service, it, now)
-        }.flatten()
+        return withContext(Dispatchers.IO) {
+            ids.map {
+                async { getEvents(service, it, now) }
+            }
+        }.awaitAll().flatten()
     }
 }
