@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
 import java.util.TimeZone
+import org.apache.commons.codec.digest.DigestUtils
 
 class Messaging {
 
@@ -25,6 +26,7 @@ class Messaging {
                     Field(true, "場所", it.location),
                     Field(true, "作成者", it.creator.email.substringBefore("@"))
                 ),
+                color = createColorFromName(it.location),
                 title_link = it.htmlLink,
                 title = it.summary,
                 footer = it.attendees.fold("参加者") { s1, s2 -> "$s1 ${s2.email.substringBefore("@")}" }
@@ -35,6 +37,15 @@ class Messaging {
             text = "直近の予定"
         )
         return Json.stringify(Message.serializer(), message)
+    }
+
+    private fun createColorFromName(input: String): String {
+        val digest = DigestUtils.md5Hex(input)
+        val r = Integer.valueOf(digest.substring(1, 3), 16)
+        val g = Integer.valueOf(digest.substring(3, 5), 16)
+        val b = Integer.valueOf(digest.substring(5, 7), 16)
+        val rgb = "$r$b$g"
+        return "#" + rgb.substring(1, 7)
     }
 }
 
